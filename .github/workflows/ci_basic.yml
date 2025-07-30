@@ -17,3 +17,13 @@ jobs:
 
       - name: Display index.html content
         run: cat app/index.html
+      - name: Display environment and secret values
+        env:
+          CUSTOM_ENV: "Environnement personnalisé"
+          SECRET_MESSAGE: ${{ secrets.SECRET_MESSAGE }}
+        run: |
+          echo "➡️ Variable personnalisée : $CUSTOM_ENV"
+          echo "➡️ OS du runner GitHub : $RUNNER_OS"
+          echo "➡️ Valeur du secret (masquée) : $SECRET_MESSAGE"
+
+
