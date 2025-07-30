@@ -1,0 +1,32 @@
+name: Secure Deployment Simulation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  simulate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repo
+        uses: actions/checkout@v3
+
+      - name: Validate SSH key format
+        run: |
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > id_rsa
+          chmod 600 id_rsa
+          ssh-keygen -l -f id_rsa
+          ssh-keygen -y -f id_rsa > /dev/null || exit 1
+
+      - name: Validate GitHub Secrets
+        run: |
+          [[ -n "${{ secrets.SERVER_IP }}" ]] || exit 1
+          [[ -n "${{ secrets.SERVER_USER }}" ]] || exit 1
+
+      - name: Simulate SSH Commands
+        run: |
+          echo "ssh -i id_rsa ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} 'echo Hello'"
+          echo "Would run: sudo apt install -y nginx"
