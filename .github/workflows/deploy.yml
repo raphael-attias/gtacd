@@ -18,12 +18,14 @@ jobs:
         mkdir -p ~/.ssh
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H ${{ secrets.VM_HOST }} >> ~/.ssh/known_hosts
+        ssh-keyscan -p 2222 -H ${{ secrets.VM_HOST }} >> ~/.ssh/known_hosts
 
     - name: Deploy with rsync
       run: |
-        rsync -az --delete ./ ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:/home/${{ secrets.VM_USER }}/gtacd/
+        rsync -az -e "ssh -p 2222 -i ~/.ssh/id_rsa" --delete ./ \
+          ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }}:/home/${{ secrets.VM_USER }}/gtacd/
 
     - name: Start app with docker-compose
       run: |
-        ssh ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} "cd gtacd && docker-compose up -d --build"
+        ssh -p 2222 -i ~/.ssh/id_rsa ${{ secrets.VM_USER }}@${{ secrets.VM_HOST }} \
+          "cd /home/${{ secrets.VM_USER }}/gtacd && docker-compose up -d --build"
