@@ -3,7 +3,7 @@ name: CI/CD Deploy to VM
 on:
   push:
     branches:
-      - main  # ou master selon ton repo
+      - main
 
 jobs:
   deploy:
