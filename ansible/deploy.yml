@@ -26,10 +26,39 @@
         src: "{{ app_src }}/"
         dest: "{{ app_dest }}/"
         owner: www-data
-        group: www-data"
+        group: www-data
         mode: '0644'
 
-    - name: Redémarrer Nginx
+    - name: Déployer la config Nginx pour tp-app
+      copy:
+        dest: /etc/nginx/sites-available/gtacd
+        content: |
+          server {
+              listen 80;
+              server_name 192.168.1.169;
+
+              location /tp-app/ {
+                  alias /var/www/html/tp-app/;
+                  index index.html;
+                  try_files $uri $uri/ =404;
+              }
+          }
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Activer la config Nginx gtacd
+      file:
+        src: /etc/nginx/sites-available/gtacd
+        dest: /etc/nginx/sites-enabled/gtacd
+        state: link
+
+    - name: Désactiver le site default si besoin
+      file:
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+
+    - name: Recharger Nginx
       service:
         name: nginx
-        state: restarted
+        state: reloaded
