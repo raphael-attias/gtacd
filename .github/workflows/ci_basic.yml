@@ -1,0 +1,31 @@
+name: Basic CI Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run application check script
+        run: bash app/check_app.sh
+
+      - name: Display index.html content
+        run: cat app/index.html
+
+      - name: Afficher les secrets et variables d’environnement
+        env:
+          CUSTOM_VAR: "MonEnvPerso"
+          ENV_TYPE: ${{ secrets.ENV_TYPE }}
+          FAKE_API_TOKEN: ${{ secrets.FAKE_API_TOKEN }}
+        run: |
+          echo "Variable custom : $CUSTOM_VAR"
+          echo "ENV_TYPE : $ENV_TYPE"
+          echo "RUNNER_OS : $RUNNER_OS"
+          echo "FAKE_API_TOKEN : $FAKE_API_TOKEN"

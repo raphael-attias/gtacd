@@ -1,0 +1,26 @@
+name: Secure Deployment Simulation
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  simulate-deployment:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Vérification des secrets définis
+        run: |
+          echo "IP serveur : ${{ secrets.SERVER_IP }}"
+          echo "Utilisateur serveur : ${{ secrets.SERVER_USER }}"
+          echo "Clé privée présente ?"
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | grep -q "PRIVATE KEY" && echo "OK" || echo "KO"
+
+      - name: Simuler configuration SSH
+        run: |
+          echo "Clé privée valide sans passphrase ?"
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" | ssh-keygen -lf - >/dev/null && echo "Clé valide"
+          echo "Commandes de déploiement simulées :"
+          echo "ssh -i ~/.ssh/github_deploy_key ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} 'mkdir -p /var/www/html/tp-app && sudo systemctl restart nginx'"

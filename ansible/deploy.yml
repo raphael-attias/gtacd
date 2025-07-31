@@ -1,42 +1,35 @@
-- name: Deploy Web App
+---
+- name: Déployer l'application web
   hosts: all
-  become: true
-
+  become: yes
   vars:
-    app_path: /var/www/html/tp-app
+    app_src: "../app"
+    app_dest: "/var/www/html/tp-app"
 
   tasks:
-    - name: Install Nginx
+    - name: Installer Nginx
       apt:
         name: nginx
         state: present
-        update_cache: true
+        update_cache: yes
 
-    - name: Create app directory
+    - name: Créer le dossier de destination
       file:
-        path: "{{ app_path }}"
+        path: "{{ app_dest }}"
         state: directory
+        owner: www-data
+        group: www-data
         mode: '0755'
 
-    - name: Copy app files
+    - name: Copier les fichiers de l'application
       copy:
-        src: ../app/
-        dest: "{{ app_path }}"
+        src: "{{ app_src }}/"
+        dest: "{{ app_dest }}/"
+        owner: www-data
+        group: www-data"
         mode: '0644'
 
-    - name: Configure Nginx
-      template:
-        src: nginx_vhost.conf.j2
-        dest: /etc/nginx/sites-available/tp-app.conf
-
-    - name: Enable site
-      file:
-        src: /etc/nginx/sites-available/tp-app.conf
-        dest: /etc/nginx/sites-enabled/tp-app.conf
-        state: link
-        force: true
-
-    - name: Restart Nginx
+    - name: Redémarrer Nginx
       service:
         name: nginx
         state: restarted
