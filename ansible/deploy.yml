@@ -3,7 +3,7 @@
   hosts: all
   become: yes
   vars:
-    app_src: "../app"
+    app_src: "/home/deployuser/gtacd/app"
     app_dest: "/var/www/html/tp-app"
 
   tasks:
