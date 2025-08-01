@@ -22,12 +22,6 @@ jobs:
       - name: Récupération du dépôt
         uses: actions/checkout@v3
 
-      # Debug provisoire – à commenter ou supprimer en prod
-      # - name: Debug secrets
-      #   run: |
-      #     echo "IP définie ? --> [${{ secrets.SERVER_IP != '' }}]"
-      #     echo "User défini ? --> [${{ secrets.SERVER_USER != '' }}]"
-
       - name: Configuration de la clé SSH
         uses: webfactory/ssh-agent@v0.9.0
         with:
@@ -35,10 +29,9 @@ jobs:
 
       - name: Création du fichier d'inventaire Ansible
         run: |
-          echo "[web]" > inventory.ini
-          echo "${{ secrets.SERVER_IP }} ansible_user=${{ secrets.SERVER_USER }}" >> inventory.ini
-          chmod 600 inventory.ini
-          cat inventory.ini  # facultatif
+          echo "[web]" > ansible/inventory.ini
+          echo "${{ secrets.SERVER_IP }} ansible_user=${{ secrets.SERVER_USER }}" >> ansible/inventory.ini
+          chmod 600 ansible/inventory.ini
 
       - name: Installation d'Ansible
         run: |
@@ -47,5 +40,4 @@ jobs:
 
       - name: Lancement du playbook Ansible
         run: |
-          cd ansible
           ansible-playbook -i ansible/inventory.ini ansible/deploy.yml
