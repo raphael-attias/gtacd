@@ -22,6 +22,11 @@ jobs:
       - name: Récupération du dépôt
         uses: actions/checkout@v3
 
+      - name: Debug secrets (temporaire)
+        run: |
+          echo "IP définie ? --> [${{ secrets.SERVER_IP != '' }}]"
+          echo "User défini ? --> [${{ secrets.SERVER_USER != '' }}]"
+
       - name: Configuration de la clé SSH
         uses: webfactory/ssh-agent@v0.9.0
         with:
@@ -32,6 +37,7 @@ jobs:
           echo "[web]" > inventory.ini
           echo "${{ secrets.SERVER_IP }} ansible_user=${{ secrets.SERVER_USER }}" >> inventory.ini
           chmod 600 inventory.ini
+          cat inventory.ini  # Debug provisoire
 
       - name: Installation d'Ansible
         run: |

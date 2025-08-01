@@ -12,6 +12,9 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+      
+      - name: Rendre le script exécutable
+        run: chmod +x ./app/check_app.sh
 
       - name: Run application check script
         run: ./app/check_app.sh
