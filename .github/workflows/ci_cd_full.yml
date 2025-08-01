@@ -48,4 +48,4 @@ jobs:
       - name: Lancement du playbook Ansible
         run: |
           cd ansible
-          ansible-playbook -i ../inventory.ini deploy.yml
+          ansible-playbook -i ansible/inventory.ini ansible/deploy.yml
