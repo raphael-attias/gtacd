@@ -1,13 +1,13 @@
 #!/bin/bash
 
-echo "Début des vérifications..."
+echo "Début de la vérification de l'application..."
 
-if [ -f "app/index.html" ]; then
-    echo "Fichier index.html trouvé."
-    echo "Fin des vérifications avec succès."
+if [ -f "./app/index.html" ]; then
+    echo "index.html trouvé ✅"
+    echo "Vérification terminée avec succès."
     exit 0
 else
-    echo "Fichier index.html manquant."
-    echo "Fin des vérifications avec erreur."
+    echo "index.html manquant ❌"
+    echo "Vérification échouée."
     exit 1
 fi

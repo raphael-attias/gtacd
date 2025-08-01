@@ -1,64 +1,36 @@
----
-- name: Déployer l'application web
-  hosts: all
-  become: yes
+- hosts: all
+  become: true
   vars:
-    app_src: "/home/deployuser/gtacd/app"
-    app_dest: "/var/www/html/tp-app"
-
+    app_dir: /var/www/html/tp-app
   tasks:
-    - name: Installer Nginx
+    - name: Install nginx
       apt:
         name: nginx
         state: present
         update_cache: yes
 
-    - name: Créer le dossier de destination
+    - name: Create app directory
       file:
-        path: "{{ app_dest }}"
+        path: "{{ app_dir }}"
         state: directory
         owner: www-data
         group: www-data
         mode: '0755'
 
-    - name: Copier les fichiers de l'application
+    - name: Copy application files
       copy:
-        src: "{{ app_src }}/"
-        dest: "{{ app_dest }}/"
+        src: ../app/
+        dest: "{{ app_dir }}"
         owner: www-data
         group: www-data
         mode: '0644'
 
-    - name: Déployer la config Nginx pour tp-app
-      copy:
-        dest: /etc/nginx/sites-available/gtacd
-        content: |
-          server {
-              listen 80;
-              server_name 192.168.1.169;
+    - name: Deploy Nginx config
+      template:
+        src: nginx_vhost.conf.j2
+        dest: /etc/nginx/sites-available/default
 
-              location /tp-app/ {
-                  alias /var/www/html/tp-app/;
-                  index index.html;
-                  try_files $uri $uri/ =404;
-              }
-          }
-        owner: root
-        group: root
-        mode: '0644'
-
-    - name: Activer la config Nginx gtacd
-      file:
-        src: /etc/nginx/sites-available/gtacd
-        dest: /etc/nginx/sites-enabled/gtacd
-        state: link
-
-    - name: Désactiver le site default si besoin
-      file:
-        path: /etc/nginx/sites-enabled/default
-        state: absent
-
-    - name: Recharger Nginx
+    - name: Reload Nginx
       service:
         name: nginx
-        state: reloaded
+        state: restarted

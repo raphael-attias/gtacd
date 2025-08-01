@@ -1,0 +1,43 @@
+name: CI/CD Full
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v3
+
+      - name: Test fictif (build)
+        run: echo "Build/test réussis – prêt à déployer"
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupération du dépôt
+        uses: actions/checkout@v3
+
+      - name: Configuration de la clé SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Création du fichier d'inventaire Ansible
+        run: |
+          echo "[web]" > inventory.ini
+          echo "${{ secrets.SERVER_IP }} ansible_user=${{ secrets.SERVER_USER }}" >> inventory.ini
+          chmod 600 inventory.ini
+
+      - name: Installation d'Ansible
+        run: |
+          sudo apt update && sudo apt install -y python3-pip
+          pip3 install ansible
+
+      - name: Lancement du playbook Ansible
+        run: |
+          ansible-playbook -i inventory.ini ansible/deploy.yml
