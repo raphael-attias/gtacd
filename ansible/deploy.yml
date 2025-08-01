@@ -17,9 +17,9 @@
         group: www-data
         mode: '0755'
 
-    - name: Copy application files
+    - name: Copy application files recursively
       copy:
-        src: app/
+        src: ../app/
         dest: "{{ app_dir }}"
         owner: www-data
         group: www-data
@@ -30,8 +30,25 @@
       template:
         src: nginx_vhost.conf.j2
         dest: /etc/nginx/sites-available/default
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Enable default site (if needed)
+      file:
+        src: /etc/nginx/sites-available/default
+        dest: /etc/nginx/sites-enabled/default
+        state: link
+        force: yes
 
     - name: Reload Nginx
       service:
         name: nginx
         state: restarted
+
+    - name: List files in app directory to verify deployment
+      command: ls -l "{{ app_dir }}"
+      register: ls_output
+
+    - debug:
+        var: ls_output.stdout_lines
