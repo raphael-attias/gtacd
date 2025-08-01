@@ -19,11 +19,12 @@
 
     - name: Copy application files
       copy:
-        src: ./app/
+        src: app/
         dest: "{{ app_dir }}"
         owner: www-data
         group: www-data
         mode: '0644'
+        recursive: yes
 
     - name: Deploy Nginx config
       template:
