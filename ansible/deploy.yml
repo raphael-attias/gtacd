@@ -48,6 +48,13 @@
       service:
         name: nginx
         state: restarted
+    
+    - name: Enable default site (if needed)
+      file:
+        src: /etc/nginx/sites-available/gtacd
+        dest: /etc/nginx/sites-enabled/gtacd
+        state: link
+        force: yes
 
     - name: List files in app directory to verify deployment
       command: ls -l "{{ app_dir }}"
