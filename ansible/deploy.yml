@@ -35,12 +35,14 @@
         group: root
         mode: '0644'
 
-    - name: Enable default site (if needed)
-      file:
-        src: /etc/nginx/sites-available/default
-        dest: /etc/nginx/sites-enabled/default
-        state: link
-        force: yes
+    - name: Deploy Nginx config
+      template:
+        src: nginx_vhost.conf.j2
+        dest: /etc/nginx/sites-available/gtacd
+        owner: root
+        group: root
+        mode: '0644'
+
 
     - name: Reload Nginx
       service:
