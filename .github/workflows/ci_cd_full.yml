@@ -45,8 +45,9 @@ jobs:
           if [ -z "$PORT" ]; then
             PORT=22
           fi
+          echo "Port utilisé : $PORT"
           echo "[web]" > ansible/inventory.ini
-          echo "${{ secrets.VM_HOST }} ansible_user=${{ secrets.VM_USER }} ansible_port=$PORT ansible_ssh_common_args='-o StrictHostKeyChecking=no'" >> ansible/inventory.ini
+          echo "${{ secrets.VM_HOST }} ansible_user=${{ secrets.VM_USER }} ansible_port=$PORT ansible_ssh_common_args=\"-o StrictHostKeyChecking=no\"" >> ansible/inventory.ini
           chmod 600 ansible/inventory.ini
           echo "Contenu du fichier inventory.ini :"
           cat ansible/inventory.ini
