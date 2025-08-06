@@ -30,26 +30,20 @@ jobs:
       - name: Vérification des secrets
         run: |
           if [ -z "${{ secrets.VM_HOST }}" ]; then
-            echo "Erreur : SERVER_IP est vide"
+            echo "Erreur : VM_HOST est vide"
             exit 1
           fi
           if [ -z "${{ secrets.VM_USER }}" ]; then
-            echo "Erreur : SERVER_USER est vide"
+            echo "Erreur : VM_USER est vide"
             exit 1
           fi
           echo "Secrets présents."
 
-      - name: Création du fichier d'inventaire Ansible
+      - name: Create Ansible inventory
         run: |
-          PORT=${{ secrets.VM_PORT }}
-          if [ -z "$PORT" ]; then
-            PORT=22
-          fi
-          echo "Port utilisé : $PORT"
           echo "[web]" > ansible/inventory.ini
-          echo "${{ secrets.VM_HOST }} ansible_user=${{ secrets.VM_USER }} ansible_port=$PORT ansible_ssh_common_args=\"-o StrictHostKeyChecking=no\"" >> ansible/inventory.ini
-          chmod 600 ansible/inventory.ini
-          echo "Contenu du fichier inventory.ini :"
+          echo "${{ secrets.VM_HOST }} ansible_user=${{ secrets.VM_USER }} ansible_port=22 ansible_ssh_common_args=\"-o StrictHostKeyChecking=no\"" >> ansible/inventory.ini
+          echo "Contenu de l'inventaire créé :"
           cat ansible/inventory.ini
 
       - name: Installation d'Ansible
