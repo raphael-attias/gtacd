@@ -27,11 +27,29 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
+      - name: Vérification des secrets
+        run: |
+          if [ -z "${{ secrets.SERVER_IP }}" ]; then
+            echo "Erreur : SERVER_IP est vide"
+            exit 1
+          fi
+          if [ -z "${{ secrets.SERVER_USER }}" ]; then
+            echo "Erreur : SERVER_USER est vide"
+            exit 1
+          fi
+          echo "Secrets présents."
+
       - name: Création du fichier d'inventaire Ansible
         run: |
+          PORT=${{ secrets.VM_PORT }}
+          if [ -z "$PORT" ]; then
+            PORT=22
+          fi
           echo "[web]" > ansible/inventory.ini
-          echo "${{ secrets.SERVER_IP }} ansible_user=${{ secrets.SERVER_USER }} ansible_port=10222" >> ansible/inventory.ini
+          echo "${{ secrets.SERVER_IP }} ansible_user=${{ secrets.SERVER_USER }} ansible_port=$PORT ansible_ssh_common_args='-o StrictHostKeyChecking=no'" >> ansible/inventory.ini
           chmod 600 ansible/inventory.ini
+          echo "Contenu du fichier inventory.ini :"
+          cat ansible/inventory.ini
 
       - name: Installation d'Ansible
         run: |
