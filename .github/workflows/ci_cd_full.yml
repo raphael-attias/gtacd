@@ -30,7 +30,7 @@ jobs:
       - name: Création du fichier d'inventaire Ansible
         run: |
           echo "[web]" > ansible/inventory.ini
-          echo "${{ secrets.SERVER_IP }} ansible_user=${{ secrets.SERVER_USER }}" >> ansible/inventory.ini
+          echo "${{ secrets.SERVER_IP }} ansible_user=${{ secrets.SERVER_USER }} ansible_port=10222" >> ansible/inventory.ini
           chmod 600 ansible/inventory.ini
 
       - name: Installation d'Ansible

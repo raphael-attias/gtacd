@@ -1,11 +1,14 @@
 server {
     listen 80;
-    server_name  _;
+    server_name gtacd.littlestorm.eu;
 
-    root /var/www/html/tp-app;
-    index index.html index.htm;
+    root /var/www/html/gtacd;
+    index index.html;
 
     location / {
         try_files $uri $uri/ =404;
     }
+
+    access_log /var/log/nginx/gtacd.access.log;
+    error_log /var/log/nginx/gtacd.error.log;
 }
