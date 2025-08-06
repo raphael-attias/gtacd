@@ -19,12 +19,13 @@
 
     - name: Copy application files recursively
       copy:
-        src: app/
+        src: /home/deployuser/gtacd/app/
         dest: "{{ app_dir }}"
         owner: www-data
         group: www-data
         mode: '0644'
-        recursive: yes
+        remote_src: yes
+        directory_mode: '0755'
 
     - name: Deploy Nginx config
       template:
