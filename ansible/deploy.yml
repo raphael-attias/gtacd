@@ -19,7 +19,7 @@
 
     - name: Copy application files recursively
       copy:
-        src: ../app/
+        src: app/
         dest: "{{ app_dir }}"
         owner: www-data
         group: www-data

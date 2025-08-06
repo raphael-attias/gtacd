@@ -41,6 +41,9 @@ jobs:
         run: |
           sudo apt update && sudo apt install -y python3-pip
           pip3 install ansible
+      - name: Copier les fichiers de l'app dans ansible/
+        run: |
+          cp -r app ansible/
       - name: Lancement du playbook Ansible
         run: |
           ansible-playbook -i ansible/inventory.ini ansible/deploy.yml
