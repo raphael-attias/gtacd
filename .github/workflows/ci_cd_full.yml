@@ -29,7 +29,7 @@ jobs:
 
       - name: Vérification des secrets
         run: |
-          if [ -z "${{ secrets.VM_IP }}" ]; then
+          if [ -z "${{ secrets.VM_HOST }}" ]; then
             echo "Erreur : SERVER_IP est vide"
             exit 1
           fi
