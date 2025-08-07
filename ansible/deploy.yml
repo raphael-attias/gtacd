@@ -1,64 +1,51 @@
-- hosts: all
+# ansible/deploy.yml
+- name: Déploiement de l’app GTACD
+  hosts: tp
   become: true
+
   vars:
-    app_dir: /var/www/html/gtacd
+    dest: /var/www/html/tp-app
+
   tasks:
-    - name: Install nginx
+    - name: Installer Nginx
       apt:
         name: nginx
         state: present
         update_cache: yes
 
-    - name: Create app directory
+    - name: Désactiver le site Nginx par défaut
       file:
-        path: "{{ app_dir }}"
+        path: /etc/nginx/sites-enabled/default
+        state: absent
+
+    - name: Créer le dossier de l’app
+      file:
+        path: "{{ dest }}"
         state: directory
         owner: www-data
         group: www-data
         mode: '0755'
 
-    - name: Copy application files recursively
+    - name: Copier les fichiers de l’app
       copy:
-        src: /home/deployuser/gtacd/app/
-        dest: "{{ app_dir }}"
-        owner: www-data
-        group: www-data
+        src: ../app/
+        dest: "{{ dest }}/"
         mode: '0644'
-        remote_src: yes
-        directory_mode: '0755'
 
-    - name: Deploy Nginx config
+    - name: Déployer la configuration Nginx
       template:
         src: nginx_vhost.conf.j2
-        dest: /etc/nginx/sites-available/default
-        owner: root
-        group: root
+        dest: /etc/nginx/sites-available/tp-app.conf
         mode: '0644'
 
-    - name: Deploy Nginx config
-      template:
-        src: nginx_vhost.conf.j2
-        dest: /etc/nginx/sites-available/gtacd
-        owner: root
-        group: root
-        mode: '0644'
-
-
-    - name: Reload Nginx
-      service:
-        name: nginx
-        state: restarted
-    
-    - name: Enable default site (if needed)
+    - name: Activer le site tp-app
       file:
-        src: /etc/nginx/sites-available/gtacd
-        dest: /etc/nginx/sites-enabled/gtacd
+        src: /etc/nginx/sites-available/tp-app.conf
+        dest: /etc/nginx/sites-enabled/tp-app.conf
         state: link
         force: yes
 
-    - name: List files in app directory to verify deployment
-      command: ls -l "{{ app_dir }}"
-      register: ls_output
-
-    - debug:
-        var: ls_output.stdout_lines
+    - name: Redémarrer Nginx
+      service:
+        name: nginx
+        state: restarted
